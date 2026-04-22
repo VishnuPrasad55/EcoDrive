@@ -1,0 +1,206 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 222 52% 4%;
+    --foreground: 210 25% 94%;
+    --card: 222 45% 6%;
+    --card-foreground: 210 25% 94%;
+    --popover: 222 45% 6%;
+    --popover-foreground: 210 25% 94%;
+    --primary: 38 90% 50%;
+    --primary-foreground: 222 52% 4%;
+    --secondary: 222 35% 10%;
+    --secondary-foreground: 210 25% 94%;
+    --muted: 222 35% 10%;
+    --muted-foreground: 215 18% 52%;
+    --accent: 240 67% 62%;
+    --accent-foreground: 210 25% 94%;
+    --destructive: 0 80% 60%;
+    --destructive-foreground: 210 25% 98%;
+    --border: 222 30% 13%;
+    --input: 222 35% 10%;
+    --ring: 38 90% 50%;
+    --radius: 0.75rem;
+  }
+}
+
+@layer base {
+  * { @apply border-border; }
+
+  body {
+    @apply bg-background text-foreground;
+    background-color: #060b15;
+    overflow-x: hidden;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  h1, h2, h3, h4, h5, h6 { @apply font-display; }
+
+  ::selection {
+    background: rgba(245, 158, 11, 0.25);
+    color: #fde68a;
+  }
+
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: rgba(255,255,255,0.02); }
+  ::-webkit-scrollbar-thumb { background: rgba(245,158,11,0.2); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(245,158,11,0.4); }
+}
+
+@layer utilities {
+  /* Glassmorphism variants */
+  .glass {
+    background: rgba(255,255,255,0.03);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(255,255,255,0.07);
+  }
+  .glass-strong {
+    background: rgba(255,255,255,0.06);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+  .glass-flux {
+    background: rgba(245,158,11,0.06);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(245,158,11,0.18);
+  }
+  .glass-surge {
+    background: rgba(107,107,236,0.06);
+    backdrop-filter: blur(14px);
+    border: 1px solid rgba(107,107,236,0.18);
+  }
+  .glass-spark {
+    background: rgba(12,165,235,0.06);
+    backdrop-filter: blur(14px);
+    border: 1px solid rgba(12,165,235,0.18);
+  }
+
+  /* Gradient utilities */
+  .gradient-flux {
+    background: linear-gradient(135deg, #f59e0b 0%, #fb923c 100%);
+  }
+  .gradient-surge {
+    background: linear-gradient(135deg, #6b6bec 0%, #38bdf8 100%);
+  }
+  .gradient-flux-text {
+    background: linear-gradient(135deg, #fbbf24 0%, #fb923c 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .gradient-surge-text {
+    background: linear-gradient(135deg, #a5a5fd 0%, #38bdf8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .gradient-title-text {
+    background: linear-gradient(120deg, #fbbf24 0%, #f97316 45%, #a78bfa 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Glow effects */
+  .glow-flux { box-shadow: 0 0 20px rgba(245,158,11,0.3), 0 0 60px rgba(245,158,11,0.1); }
+  .glow-surge { box-shadow: 0 0 20px rgba(107,107,236,0.3), 0 0 60px rgba(107,107,236,0.1); }
+  .glow-spark { box-shadow: 0 0 20px rgba(12,165,235,0.3), 0 0 60px rgba(12,165,235,0.1); }
+
+  /* Grid backgrounds */
+  .grid-bg {
+    background-image: linear-gradient(rgba(245,158,11,0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(245,158,11,0.035) 1px, transparent 1px);
+    background-size: 44px 44px;
+  }
+  .grid-bg-surge {
+    background-image: linear-gradient(rgba(107,107,236,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(107,107,236,0.04) 1px, transparent 1px);
+    background-size: 44px 44px;
+  }
+
+  /* Scan animation */
+  .scan-h::after {
+    content: '';
+    position: absolute;
+    top: 0; bottom: 0; left: 0;
+    width: 40%;
+    background: linear-gradient(90deg, transparent, rgba(245,158,11,0.15), transparent);
+    animation: scanH 3s linear infinite;
+  }
+
+  /* Skeleton loader */
+  .skeleton {
+    background: linear-gradient(90deg,
+      rgba(255,255,255,0.03) 25%,
+      rgba(245,158,11,0.07) 50%,
+      rgba(255,255,255,0.03) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.6s infinite;
+  }
+
+  /* Status dot */
+  .status-live {
+    position: relative;
+  }
+  .status-live::before {
+    content: '';
+    display: inline-block;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: #f59e0b;
+    box-shadow: 0 0 8px rgba(245,158,11,0.8);
+    animation: pulse_amber 2.5s ease-in-out infinite;
+    margin-right: 6px;
+    vertical-align: middle;
+  }
+}
+
+/* ── Leaflet overrides ─────────────────────────── */
+.leaflet-container {
+  background: #060b15 !important;
+  font-family: var(--font-outfit), system-ui !important;
+}
+.leaflet-tile {
+  filter: brightness(0.55) saturate(0.6) hue-rotate(195deg) !important;
+}
+.leaflet-popup-content-wrapper {
+  background: rgba(6,11,21,0.97) !important;
+  border: 1px solid rgba(245,158,11,0.25) !important;
+  border-radius: 12px !important;
+  color: #e2e8f0 !important;
+  backdrop-filter: blur(16px) !important;
+  box-shadow: 0 0 30px rgba(245,158,11,0.15) !important;
+}
+.leaflet-popup-tip { background: rgba(245,158,11,0.25) !important; }
+.leaflet-control-zoom {
+  border: 1px solid rgba(245,158,11,0.2) !important;
+  background: rgba(6,11,21,0.9) !important;
+  border-radius: 8px !important;
+  overflow: hidden;
+}
+.leaflet-control-zoom a {
+  background: transparent !important;
+  color: #f59e0b !important;
+  border-bottom: 1px solid rgba(245,158,11,0.12) !important;
+  line-height: 28px !important;
+}
+.leaflet-control-zoom a:hover { background: rgba(245,158,11,0.12) !important; }
+.leaflet-attribution-flag { display: none !important; }
+.leaflet-control-attribution {
+  background: rgba(6,11,21,0.7) !important;
+  color: rgba(255,255,255,0.25) !important;
+  font-size: 10px !important;
+}
+
+/* ── Recharts ─────────────────────────────────── */
+.recharts-tooltip-wrapper .recharts-default-tooltip {
+  background: rgba(6,11,21,0.97) !important;
+  border: 1px solid rgba(245,158,11,0.2) !important;
+  border-radius: 8px !important;
+}
