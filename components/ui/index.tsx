@@ -62,7 +62,7 @@ export function StatCard({ label, value, sub, icon, trend, color = 'flux', delay
 }
 
 // ── Badge ─────────────────────────────────────────
-interface BadgeProps { children: ReactNode; variant?: 'flux' | 'surge' | 'spark' | 'ember' | 'red' | 'muted'; size?: 'sm' | 'md' }
+interface BadgeProps { children: ReactNode; variant?: 'flux' | 'surge' | 'spark' | 'ember' | 'red' | 'eco' | 'volt' | 'electric' | 'muted'; size?: 'sm' | 'md' }
 export function Badge({ children, variant = 'flux', size = 'sm' }: BadgeProps) {
   const variants = {
     flux:  'bg-flux-500/15 text-flux-400 border-flux-500/30',
@@ -70,6 +70,9 @@ export function Badge({ children, variant = 'flux', size = 'sm' }: BadgeProps) {
     spark: 'bg-spark-500/15 text-spark-400 border-spark-500/30',
     ember: 'bg-ember-500/15 text-ember-400 border-ember-500/30',
     red:   'bg-red-500/15 text-red-400 border-red-500/30',
+    eco:   'bg-emerald-500/15 text-emerald-400 border-emerald-500/30',
+    volt:  'bg-cyan-500/15 text-cyan-300 border-cyan-500/30',
+    electric: 'bg-sky-500/15 text-sky-300 border-sky-500/30',
     muted: 'bg-white/5 text-white/45 border-white/10',
   }
   const sizes = { sm: 'px-2 py-0.5 text-xs', md: 'px-3 py-1 text-sm' }
@@ -81,7 +84,7 @@ export function Badge({ children, variant = 'flux', size = 'sm' }: BadgeProps) {
 }
 
 // ── Button ────────────────────────────────────────
-interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface ButtonProps extends React.ComponentPropsWithoutRef<typeof motion.button> {
   variant?: 'primary' | 'secondary' | 'ghost' | 'danger'; size?: 'sm' | 'md' | 'lg'
   loading?: boolean; icon?: ReactNode
 }
@@ -99,12 +102,12 @@ export function Button({ children, variant = 'primary', size = 'md', loading, ic
       whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}
       className={cn('inline-flex items-center gap-2 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed', variants[variant], sizes[size], className)}
       disabled={loading || props.disabled}
-      {...(props as React.ButtonHTMLAttributes<HTMLButtonElement>)}
+      {...props}
     >
       {loading
         ? <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
         : icon ?? null}
-      {children}
+      {children as ReactNode}
     </motion.button>
   )
 }

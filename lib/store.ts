@@ -28,9 +28,11 @@ interface AppState {
   setCurrentOptimization: (result: OptimizationResult | null) => void
 
   optimizationHistory: OptimizationResult[]
+  setOptimizationHistory: (results: OptimizationResult[]) => void
   addOptimizationResult: (result: OptimizationResult) => void
 
   savedPlans: SavedPlan[]
+  setSavedPlans: (plans: SavedPlan[]) => void
   addSavedPlan: (plan: SavedPlan) => void
   removeSavedPlan: (id: string) => void
 
@@ -75,10 +77,12 @@ export const useAppStore = create<AppState>()(
       setCurrentOptimization: (result) => set({ currentOptimization: result }),
 
       optimizationHistory: [],
+      setOptimizationHistory: (results) => set({ optimizationHistory: results }),
       addOptimizationResult: (result) =>
         set((s) => ({ optimizationHistory: [result, ...s.optimizationHistory].slice(0, 20) })),
 
       savedPlans: [],
+      setSavedPlans: (plans) => set({ savedPlans: plans }),
       addSavedPlan: (plan) => set((s) => ({ savedPlans: [plan, ...s.savedPlans] })),
       removeSavedPlan: (id) => set((s) => ({ savedPlans: s.savedPlans.filter((p) => p.id !== id) })),
 

@@ -12,6 +12,7 @@ const COLORS = {
   flux: '#f59e0b',
   surge: '#6b6bec',
   spark: '#0ca5eb',
+  ember: '#fb923c',
   red: '#ef4444',
 }
 

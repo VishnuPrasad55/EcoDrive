@@ -48,6 +48,7 @@ export default function OptimizePage() {
   const [tab, setTab] = useState<'params' | 'results'>('params')
   const [showExplanation, setShowExplanation] = useState(true)
   const [progress, setProgress] = useState(0)
+  const [savingPlan, setSavingPlan] = useState(false)
 
   const setParam = <K extends keyof OptimizationParams>(k: K, v: OptimizationParams[K]) =>
     setParams(p => ({ ...p, [k]: v }))
@@ -57,6 +58,50 @@ export default function OptimizePage() {
     setParam('region', region)
     setExistingStations(generateExistingStations(region))
     toast(`Region set: ${region.name.split(',')[0]}`, 'info')
+  }
+
+  const saveOptimizationResult = async (optimization: OptimizationResult) => {
+    try {
+      const response = await fetch('/api/optimizations', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ result: optimization }),
+      })
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null)
+        console.warn('Failed to persist optimization result', errorData)
+      }
+    } catch (error) {
+      console.error('Optimization persistence error:', error)
+    }
+  }
+
+  const handleSavePlan = async () => {
+    if (!result) return
+    setSavingPlan(true)
+
+    try {
+      const response = await fetch('/api/plans', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: `${result.name} Plan`,
+          optimization_id: result.id,
+          notes: `Saved plan for ${result.params.region.name}`,
+          tags: ['automated'],
+        }),
+      })
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null)
+        throw new Error(errorData?.error || 'Could not save plan')
+      }
+      toast('Plan saved to your Supabase workspace', 'success')
+    } catch (error) {
+      toast(error instanceof Error ? error.message : 'Failed to save plan', 'error')
+      console.error('Save plan error:', error)
+    } finally {
+      setSavingPlan(false)
+    }
   }
 
   const handleRun = async () => {
@@ -71,6 +116,7 @@ export default function OptimizePage() {
       setSuggestedStations(r.suggested_stations)
       addOptimizationResult(r)
       setTab('results')
+      saveOptimizationResult(r)
       toast(`✓ Found ${r.suggested_stations.length} optimal sites in ${r.params.region.name.split(',')[0]}`, 'success')
     } catch (err) {
       toast('Optimization failed — check console', 'error')
@@ -198,7 +244,9 @@ export default function OptimizePage() {
                     onClick={() => { downloadCSV(stationsToCSVRows(result.suggested_stations), `ecodrive-${result.params.region.id}.csv`); toast('CSV exported', 'success') }}
                     className="flex-1">CSV</Button>
                   <Button variant="secondary" size="sm" icon={<Save className="w-3.5 h-3.5" />}
-                    onClick={() => toast('Plan saved', 'success')} className="flex-1">Save</Button>
+                    onClick={handleSavePlan}
+                    loading={savingPlan}
+                    className="flex-1">Save</Button>
                 </div>
               </>
             )}

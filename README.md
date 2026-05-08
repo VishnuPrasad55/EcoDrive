@@ -2,6 +2,8 @@
 
 > A production-ready full-stack web application for optimizing EV charging station placement across Indian cities using machine learning and spatial analysis.
 
+**Status**: ✅ **Production-Ready** — Full auth, encrypted persistence, RLS policies, and type-safe persistence layer.
+
 ---
 
 ## 🚀 Quick Start
@@ -14,29 +16,59 @@ npm install
 
 # 2. Set up environment
 cp .env.example .env.local
-# Fill in your Supabase + Mapbox credentials
+# REQUIRED:
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 
 # 3. Run development server
 npm run dev
+# Visit http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) — no auth credentials needed in demo mode.
+## ✨ Key Improvements (Latest)
 
----
+### 🔐 Authentication & Authorization
+- **Email/Password + Google OAuth** via Supabase Auth
+- **Role-based access control (RLS)** on all data tables
+- **Auto-redirect** to login for unauthenticated users
+- **Logout button** in header
+- **Session persistence** across page reloads
+
+### 💾 Backend Persistence Layer
+- **Supabase PostgreSQL integration** for all user data
+- **Optimization Results API** (`/api/optimizations`) — stores & retrieves run history
+- **Saved Plans API** (`/api/plans`) — create, list, delete saved plans
+- **Protected routes** — all APIs require valid JWT token
+- **Server-side auth helpers** (`createSupabaseAdminClient`, `getUserFromRequest`)
+
+### 📊 Frontend State Syncing
+- **Auto-save optimization results** to Supabase after each run
+- **Plans page** fetches from DB on load, syncs with Zustand for offline use
+- **AppShell auth check** — verifies session before rendering app
+- **Graceful fallback** — uses localStorage if DB unavailable
+- **Optimistic updates** — UI updates immediately, retries on network issues
+
+### 🛡️ Data Security
+- **RLS policies** ensure users only access their own data
+- **Service role key** for server-side admin operations (never exposed client-side)
+- **JWT token extraction** from request headers for auth
+- **Encrypted transit** (HTTPS only in production)
 
 ## 🧩 Features
 
 | Feature | Description |
 |---|---|
-| 🔐 Auth | Supabase email/password + Google OAuth |
+| 🔐 Auth | Supabase email/password + Google OAuth + RLS |
 | 🗺️ Interactive Map | Leaflet-based map with animated station markers |
 | 🤖 AI Optimization | K-Means++ clustering + greedy coverage maximization |
 | 📊 Analytics | 6 live charts: demand, utilization, coverage gap, revenue |
 | 🎬 Simulation | Step-by-step playback of optimization algorithm |
 | 🧠 AI Explanation | Per-run explanation of why locations were chosen |
-| 💾 Plan Management | Save, compare, export optimization results |
+| 💾 Plan Management | Save, compare, export optimization results (DB-backed) |
 | 📥 Export | CSV download of suggested station coordinates |
 | 📱 Responsive | Mobile-first layout with sidebar navigation |
+| ☁️ Cloud Persistence | All user data synced to Supabase in real-time |
 
 ---
 
@@ -48,8 +80,10 @@ Styling:      Tailwind CSS + custom glassmorphism utilities
 Animations:   Framer Motion
 Maps:         Leaflet + React-Leaflet (OSM tiles)
 Charts:       Recharts
-State:        Zustand (with localStorage persistence)
-Database:     Supabase (PostgreSQL + Auth + RLS)
+State:        Zustand (with localStorage persistence + Supabase sync)
+Database:     Supabase (PostgreSQL + Auth + RLS policies)
+Auth:         Supabase Auth (email/password, Google OAuth)
+API:          Next.js API Routes (protected with JWT)
 AI Logic:     Custom TypeScript spatial optimization (K-Means++ + greedy)
 Fonts:        DM Sans + Syne + JetBrains Mono (Google Fonts)
 ```
@@ -64,23 +98,25 @@ ecodrive/
 │   ├── page.tsx                  # Landing page
 │   ├── layout.tsx                # Root layout + fonts
 │   ├── globals.css               # Design system + Tailwind
-│   ├── auth/login/page.tsx       # Authentication
+│   ├── auth/login/page.tsx       # Authentication (Supabase)
 │   ├── dashboard/page.tsx        # Main dashboard
 │   ├── map/page.tsx              # Interactive map
 │   ├── optimize/page.tsx         # AI optimization engine
 │   ├── analytics/page.tsx        # Charts & metrics
-│   ├── plans/page.tsx            # Saved optimization plans
+│   ├── plans/page.tsx            # Saved plans (Supabase-backed)
 │   ├── compare/page.tsx          # Side-by-side comparison
 │   ├── settings/page.tsx         # User settings
 │   └── api/
-│       ├── optimize/route.ts     # POST /api/optimize
+│       ├── optimize/route.ts     # POST /api/optimize (legacy)
+│       ├── optimizations/route.ts   # GET/POST /api/optimizations (protected)
+│       ├── plans/route.ts           # GET/POST/DELETE /api/plans (protected)
 │       ├── stations/route.ts     # GET /api/stations
 │       └── analytics/route.ts   # GET /api/analytics
 ├── components/
 │   ├── layout/
-│   │   ├── AppShell.tsx          # Page wrapper with sidebar
+│   │   ├── AppShell.tsx          # Auth-gated page wrapper
 │   │   ├── Sidebar.tsx           # Navigation sidebar
-│   │   ├── Header.tsx            # Top header bar
+│   │   ├── Header.tsx            # Header with sign-out
 │   │   └── Providers.tsx         # Framer Motion provider
 │   ├── map/
 │   │   ├── MapView.tsx           # Leaflet map component
@@ -97,11 +133,14 @@ ecodrive/
 ├── lib/
 │   ├── ai-optimizer.ts           # Core optimization algorithm
 │   ├── mock-data.ts              # Indian regions + station data
-│   ├── store.ts                  # Zustand global state
-│   ├── supabase.ts               # Supabase client
+│   ├── store.ts                  # Zustand global state (DB-synced)
+│   ├── supabase.ts               # Supabase client (public)
+│   ├── supabase-server.ts        # Supabase admin (server-side)
 │   └── utils.ts                  # Helpers + export utilities
 ├── types/index.ts                # TypeScript interfaces
 └── supabase/migrations/
+    └── 001_initial_schema.sql    # Tables + RLS policies
+
     └── 001_initial_schema.sql    # Database schema
 ```
 

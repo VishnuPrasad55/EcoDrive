@@ -1,13 +1,21 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Bell, Search, User, Radio } from 'lucide-react'
+import { Bell, Search, User, Radio, LogOut } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 import { useAppStore } from '@/lib/store'
+import { supabase } from '@/lib/supabase'
 
 interface HeaderProps { title: string; subtitle?: string }
 
 export function Header({ title, subtitle }: HeaderProps) {
+  const router = useRouter()
   const { selectedRegion } = useAppStore()
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut()
+    router.replace('/auth/login')
+  }
 
   return (
     <motion.header
@@ -43,9 +51,14 @@ export function Header({ title, subtitle }: HeaderProps) {
           <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-flux-400" style={{ boxShadow: '0 0 5px rgba(245,158,11,0.9)' }} />
         </button>
 
-        <div className="w-8 h-8 rounded-lg gradient-flux flex items-center justify-center cursor-pointer glow-flux">
-          <User className="w-3.5 h-3.5 text-black" />
-        </div>
+        <button
+          type="button"
+          onClick={handleSignOut}
+          className="w-8 h-8 rounded-lg gradient-flux flex items-center justify-center cursor-pointer glow-flux"
+          aria-label="Sign out"
+        >
+          <LogOut className="w-3.5 h-3.5 text-black" />
+        </button>
       </div>
     </motion.header>
   )
